@@ -1,7 +1,9 @@
 package com.ktds.cocomo.simpleboard;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.View;
@@ -60,21 +62,32 @@ public class MainActivity extends AppCompatActivity {
 
     private long pressedTime;
 
-    // 뒤로가기 버튼 눌렀을 때
     @Override
     public void onBackPressed() {
-        if(pressedTime == 0) {
-            Toast.makeText(MainActivity.this, "한번 더 누르면 종료됩니다.", Toast.LENGTH_LONG).show();
-            pressedTime = System.currentTimeMillis();
-        } else {
-            long seconds = System.currentTimeMillis() - pressedTime;
 
-            if( seconds > 2000 ) {
-                Toast.makeText(MainActivity.this, "한번 더 누르면 종료됩니다.", Toast.LENGTH_LONG).show();
-                pressedTime = 0;
-            } else {
-                super.onBackPressed();
-            }
-        }
+        // Alert을 이용해 종료시키기
+        AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
+        dialog  .setTitle("종료 알림")
+                .setMessage("정말 종료하시겠습니까?")
+                .setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "종료합니다", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                })
+                .setNeutralButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "취소했습니다", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("아니요", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, "종료하지 않습니다", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .create().show();
     }
 }

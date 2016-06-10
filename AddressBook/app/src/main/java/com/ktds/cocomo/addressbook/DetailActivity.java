@@ -46,7 +46,6 @@ public class DetailActivity extends AppCompatActivity {
         });
     }
 
-
     @Override
     public void onBackPressed() {
         Toast.makeText(DetailActivity.this, "리스트로 이동합니다.", Toast.LENGTH_SHORT).show();

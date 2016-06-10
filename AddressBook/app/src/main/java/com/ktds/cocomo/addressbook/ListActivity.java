@@ -47,7 +47,7 @@ public class ListActivity extends AppCompatActivity {
 
     private void prepareAddressBookDB() {
         for (int i = 1; i < 10; i++) {
-            AddressBookDB.addAddressBook("김광민 " + i, new AddressBookVO("김광민 " + i, "010-6291-1316", "양화대교 근처 " + i + "번지"));
+            AddressBookDB.addAddressBook("김광민 " + i, new AddressBookVO("김광민 " + i, "010-1316-3669", "양화대교 근처 " + i + "번지"));
         }
     }
 
