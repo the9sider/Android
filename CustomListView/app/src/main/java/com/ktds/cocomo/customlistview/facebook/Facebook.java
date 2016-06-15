@@ -3,12 +3,12 @@ package com.ktds.cocomo.customlistview.facebook;
 import android.content.Context;
 import android.util.Log;
 
-import com.ktds.cocomo.customlistview.MainActivity;
 import com.restfb.Connection;
 import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
 import com.restfb.Version;
+import com.restfb.types.FacebookType;
 import com.restfb.types.Post;
 import com.restfb.types.User;
 
@@ -25,7 +25,7 @@ public class Facebook {
      */
     private static final String APP_ID = "453904898150515";
     private static final String APP_SECRET = "394c32c954e3074738e6e07a750acf6a";
-    private static final String ACCESS_TOKEN = "EAAGc0vg3UHMBAG8zEaMwT6SIDg0rDBaEyZC4nnEjA06EYqa2I99EYeKc6r8bsPUS0tq5t4Y3oeE4ZBUalH3gl8eY9nUb22qLsCJOc43iZAS2wc1QkbOFs1MOT8tGldaHKi8EhvNRj4F6x5Xlxw0doZBX13ikDOlYC3KPZCZC6kXgZDZD";
+    private static final String ACCESS_TOKEN = "EAAGc0vg3UHMBAFSdfhXXVSuk7ZCg0A8Cz4WZBIZA6NekWdZCzUkWwgvzUZA8DCy9949t59RqZAoLLomaxRlkuWK2QjZBnUgxdcRZBcyjUnJ6GW3dFm5ZCAocEI9lYPAWLgUs6sX2r12DIXpKjYiAu6jkLszfGljpeGFsJurxdgByWWgZDZD";
 
     private Context context;
 
@@ -48,7 +48,7 @@ public class Facebook {
      *
      * @return : 로그인 성공시 true
      */
-    public void auth() {
+    public void auth(final After after) {
 
         new Thread(new Runnable() {
             @Override
@@ -67,7 +67,7 @@ public class Facebook {
                 // 로그인 되었으면 isLogin = true
                 isLogin = (me != null);
                 if (isLogin) {
-                    ((MainActivity) context).setTimeline();
+                    after.doAfter(context);
                 }
             }
         }).start();
@@ -83,10 +83,9 @@ public class Facebook {
     }
 
     /**
-     *
      * @param timelineSerializable : 쓰레드안의 run에서 사용하기 위해 final 붙인다.
      */
-    public void getTimeLine( final TimelineSerializable timelineSerializable ) {
+    public void getTimeLine(final TimelineSerializable timelineSerializable) {
 
         new Thread(new Runnable() {
             @Override
@@ -95,7 +94,7 @@ public class Facebook {
                 /**
                  * 나의 타임라인의 모든 포스트를 Post라는 클래스 형태로 가져온다.
                  */
-                Connection<Post> feeds = myFacebook.fetchConnection("me/feed", Post.class, Parameter.with("fields", "from,likes,message,story"));
+                Connection<Post> feeds = myFacebook.fetchConnection("me/feed", Post.class, Parameter.with("fields", "from,likes,message,story,link,id"));
 
                 List<Post> postList = new ArrayList<Post>();
 
@@ -110,7 +109,57 @@ public class Facebook {
         }).start();
     }
 
+    /**
+     * Post 상세정보 가져오기
+     * @param id : Post Id
+     * @param postSerializable
+     */
+    public void getPostDetail(final String id, final PostSerializable postSerializable) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                /**
+                 * Post 상세정보 가져오기
+                 */
+                Post post = myFacebook.fetchObject(id, Post.class, Parameter.with("fields", "id,from,message"));
+                postSerializable.serialize(post);
+            }
+        }).start();
+
+    }
+
+    /**
+     * 페이스북에 포스트 작성하기
+     *
+     * @param message
+     * @return
+     */
+    public void publishing(final String message, final After after) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FacebookType facebookType = myFacebook.publish(
+                        "me/feed", FacebookType.class, Parameter.with("message", message));
+
+                after.doAfter(context);
+            }
+        }).start();
+    }
+
     public interface TimelineSerializable {
         public void serialize(List<Post> posts);
+    }
+
+    public interface PostSerializable {
+        public void serialize(Post post);
+    }
+
+    public interface After {
+
+        // 이후에 할 작업들을 하는 메소드드
+        public void doAfter(Context context);
     }
 }

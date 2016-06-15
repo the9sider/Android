@@ -1,10 +1,14 @@
 package com.ktds.cocomo.customlistview;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -28,12 +32,65 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         handler = new Handler();
+        lvArticleList = (ListView) findViewById(R.id.lvArticleList);
 
         // this : 현재 Activity의 context
         facebook = new Facebook(this);
-        facebook.auth();
+        facebook.auth(new Facebook.After() {
+            @Override
+            public void doAfter(Context context) {
+                // 인증이 끝나고 타임라인 세팅하기
+                setTimeline();
+            }
+        });
+    }
 
-        lvArticleList = (ListView) findViewById(R.id.lvArticleList);
+    /**
+     * Action Bar에 메뉴를 생성한다.
+     *
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.list_menu, menu);
+        return true;
+    }
+
+    /**
+     * 메뉴 아이템을 클릭했을 때 발생되는 이벤트
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.newPost) {
+            Intent intent = new Intent(this, WritePostActivity.class);
+
+            // 글 작성됐는지 확인하고 게시글을 업데이트 하기 위해 forResult를 이용한다.
+            startActivityForResult(intent, 1000);
+
+            // Toast.makeText(MainActivity.this, "새 글 등록 버튼을 클릭했습니다", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * WritePostActivity에서 포스트가 작성되었으면 리스트를 갱신한다.
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1000 && resultCode == RESULT_OK) {
+            setTimeline();
+        }
     }
 
     public void setTimeline() {
@@ -77,6 +134,55 @@ public class MainActivity extends ActionBarActivity {
         public ArticleListViewAdapter(Context context, List<Post> articleList) {
             this.articleList = articleList;
             this.context = context;
+        }
+
+        /**
+         * Item의 속성에 따라서 보여질 아이템 레이아웃을 정해준다.
+         *
+         * @param position
+         * @return
+         */
+        @Override
+        public int getItemViewType(int position) {
+
+            /**
+             * 만약, Message가 Null이 아니라면 list_item_message를 보여주고
+             * 만약, Story가 Null이 아니라면 list_item_story를 보여주고
+             * 만약, link가 Null이 아니라면 list_item_link를 보여준다.
+             */
+            article = (Post) getItem(position);
+
+            if (article.getMessage() != null && article.getMessage().length() > 0) {
+                return 0;
+            } else if (article.getStory() != null && article.getStory().length() > 0) {
+                return 1;
+            } else if (article.getStory() != null && article.getStory().length() > 0) {
+                return 2;
+            } else {
+                return -1;
+            }
+        }
+
+        public int getLayoutType(int index) {
+            if (index == 0) {
+                return R.layout.list_item_message;
+            } else if (index == 1) {
+                return R.layout.list_item_story;
+            } else if (index == 2) {
+                return R.layout.list_item_link;
+            } else {
+                return -1;
+            }
+        }
+
+        /**
+         * Item Layout의 개수를 가져온다.
+         *
+         * @return
+         */
+        @Override
+        public int getViewTypeCount() {
+            return 3;
         }
 
         /**
@@ -125,6 +231,7 @@ public class MainActivity extends ActionBarActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
 
             ItemHolder holder = null;
+            int layoutType = getItemViewType(position);
 
             /**
              * 가장 효율적인 방법 !!
@@ -139,23 +246,32 @@ public class MainActivity extends ActionBarActivity {
                  * Item Cell에 Layout을 적용시킨다.
                  * 실제 객체는 이곳에 있다.
                  */
-                convertView = inflater.inflate(R.layout.list_item, parent, false);
-
+                convertView = inflater.inflate(getLayoutType(layoutType), parent, false);
                 holder = new ItemHolder();
-                holder.tvSubject = (TextView) convertView.findViewById(R.id.tvSubject);
-                holder.tvAuthor = (TextView) convertView.findViewById(R.id.tvAuthor);
-                holder.tvHitCount = (TextView) convertView.findViewById(R.id.tvHitCount);
 
-                /**
-                 * 제목을 클릭했을 때의 이벤트
-                 * holder.tvSubject.setOnClickListener();
-                 *
-                 */
+                if (layoutType == 0) {
+                    holder.tvSubject = (TextView) convertView.findViewById(R.id.tvSubject);
+                    holder.tvAuthor = (TextView) convertView.findViewById(R.id.tvAuthor);
+                    holder.tvHitCount = (TextView) convertView.findViewById(R.id.tvHitCount);
+
+                    convertView.setOnClickListener(clickDetail(article.getId()));
+
+                } else if (layoutType == 1) {
+                    holder.tvSubject = (TextView) convertView.findViewById(R.id.tvSubject);
+                } else if (layoutType == 2) {
+                    holder.tvSubject = (TextView) convertView.findViewById(R.id.tvSubject);
+                    holder.tvSubject.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(article.getLink()));
+                            startActivity(intent);
+                        }
+                    });
+                }
 
                 // 항상 convertView는 holder를 등에 업어간다.
                 convertView.setTag(holder);
             }
-
             /**
              * convertView != null 이면 홀더를 꺼낸다.
              */
@@ -164,20 +280,37 @@ public class MainActivity extends ActionBarActivity {
             }
 
             article = (Post) getItem(position);
-            if (article.getMessage() != null)
+            if (layoutType == 0) {
                 holder.tvSubject.setText(article.getMessage());
-            else if (article.getStory() != null)
+                holder.tvAuthor.setText(article.getFrom().getName());
+
+                if (article.getLikes() == null) {
+                    holder.tvHitCount.setText("0");
+                } else {
+                    holder.tvHitCount.setText(article.getLikes().getData().size() + "");
+                }
+
+                convertView.setOnClickListener(clickDetail(article.getId()));
+
+            } else if (layoutType == 1) {
                 holder.tvSubject.setText(article.getStory());
-
-            holder.tvAuthor.setText(article.getFrom().getName());
-
-            if(article.getLikes() == null )
-                holder.tvHitCount.setText("0");
-            else
-                holder.tvHitCount.setText(article.getLikes().getData().size() + "");
-
+            } else if (layoutType == 2) {
+                holder.tvSubject.setText(article.getLink());
+            }
             return convertView;
         }
+    }
+
+    private View.OnClickListener clickDetail (final String postId) {
+
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), DetailActivity.class);
+                intent.putExtra("postId", postId);
+                startActivity(intent);
+            }
+        };
     }
 
     /**
