@@ -8,11 +8,14 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.ktds.cocomo.mydrawablelayout.gallery.GalleryFragment1;
 import com.ktds.cocomo.mydrawablelayout.gallery.GalleryFragment2;
 import com.ktds.cocomo.mydrawablelayout.gallery.GalleryFragment3;
+import com.ktds.cocomo.mydrawablelayout.gallery.GalleryFragment4;
+import com.ktds.cocomo.mydrawablelayout.gallery.GalleryFragment5;
+import com.ktds.cocomo.mydrawablelayout.gallery.GalleryFragment6;
 
 public class GalleryFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -55,15 +58,8 @@ public class GalleryFragment extends Fragment {
         }
     }
 
-    private Button btnFirstGallery;
-    private Button btnSecondGallery;
-    private Button btnThirdGallery;
-
     private ViewPager pager;
-
-    private Fragment galleryFragment1;
-    private Fragment galleryFragment2;
-    private Fragment galleryFragment3;
+    private PagerSlidingTabStrip tabs;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,38 +67,16 @@ public class GalleryFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
 
-        galleryFragment1 = new GalleryFragment1();
-        galleryFragment2 = new GalleryFragment2();
-        galleryFragment3 = new GalleryFragment3();
-
-        btnFirstGallery = (Button) view.findViewById(R.id.btnFirstGallery);
-        btnFirstGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pager.setCurrentItem(0);
-            }
-        });
-        btnSecondGallery = (Button) view.findViewById(R.id.btnSecondGallery);
-        btnSecondGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pager.setCurrentItem(1);
-            }
-        });
-        btnThirdGallery = (Button) view.findViewById(R.id.btnThirdGallery);
-        btnThirdGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pager.setCurrentItem(2);
-            }
-        });
-
         // View Pager를 선언합니다.
         pager = (ViewPager) view.findViewById(R.id.pager);
-        pager.setAdapter( new PagerAdapter(getActivity().getSupportFragmentManager()));
+        pager.setAdapter( new PagerAdapter( getChildFragmentManager()));
+        pager.setOffscreenPageLimit(6);
 
         // 처음으로 0번째 Fragment를 보여줍니다.
         pager.setCurrentItem(0);
+
+        tabs = (PagerSlidingTabStrip) view.findViewById(R.id.tabs) ;
+        tabs.setViewPager(pager);
 
         // Title을 설정합니다.
         getActivity().setTitle("Gallery Fragment");
@@ -111,10 +85,19 @@ public class GalleryFragment extends Fragment {
         return view;
     }
 
+    // 페이지마다 보여줄 타이틀을 정해준다.
+    private String[] pageTitle = {"Page 1", "Page 2", "Page 3",
+                                    "Page 4", "Page 5", "Page 6"};
+
     private class PagerAdapter extends FragmentPagerAdapter {
 
         public PagerAdapter(FragmentManager fm) {
             super(fm);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return pageTitle[position];
         }
 
         /**
@@ -128,11 +111,17 @@ public class GalleryFragment extends Fragment {
         public Fragment getItem(int position) {
 
             if( position == 0 ) {
-                return galleryFragment1;
+                return new GalleryFragment1();
             } else if ( position == 1 ) {
-                return galleryFragment2;
+                return new GalleryFragment2();
+            }  else if (position == 2) {
+                return new GalleryFragment3();
+            }  else if (position == 3) {
+                return new GalleryFragment4();
+            }  else if (position == 4) {
+                return new GalleryFragment5();
             }  else {
-                return galleryFragment3;
+                return new GalleryFragment6();
             }
         }
 
@@ -142,7 +131,7 @@ public class GalleryFragment extends Fragment {
          */
         @Override
         public int getCount() {
-            return 3;
+            return 6;
         }
     }
 }

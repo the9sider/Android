@@ -1,11 +1,11 @@
-package com.ktds.cocomo.mydrawablelayout;
+package com.ktds.cocomo.hamburger;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.view.View;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,29 +13,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    private Fragment cameraFragment;
-    private Fragment galleryFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cameraFragment = new CameraFragment();
-        galleryFragment = new GalleryFragment();
-
-        /**
-         * 기본 화면 설정
-         */
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(R.id.container, cameraFragment);
-        // transaction.addToBackStack(null);
-        transaction.commit();
+        // 로딩화면
+        startActivity(new Intent(this, LoadingActivity.class));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -91,26 +79,16 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * MainActivity가 implement한
-     * NavigationView.OnNavigationItemSelectedListener의 구현체
-     * @see NavigationView.OnNavigationItemSelectedListener
-     * @param item
-     * @return
-     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            transaction.replace(R.id.container, cameraFragment);
+            // Handle the camera action
         } else if (id == R.id.nav_gallery) {
-            transaction.replace(R.id.container, galleryFragment);
+
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -120,13 +98,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         }
-
-        /**
-         *
-         */
-        // transaction.addToBackStack(null);
-
-        transaction.commit();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
