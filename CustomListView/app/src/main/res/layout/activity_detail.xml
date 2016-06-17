@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/tvSubject"
-        android:text="Subject"
+        android:text=" "
         android:textSize="15dp"
         android:textColor="#000000"
         android:paddingLeft="5dp"
@@ -23,7 +23,7 @@
 
         <TextView
             android:id="@+id/tvAuthor"
-            android:text="글쓴이"
+            android:text=" "
             android:paddingLeft="5dp"
             android:layout_weight="9"
             android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
 
         <TextView
             android:id="@+id/tvHitCount"
-            android:text="999"
+            android:text=" "
             android:layout_weight="1"
             android:gravity="right"
             android:paddingRight="5dp"
@@ -40,7 +40,14 @@
 
     </LinearLayout>
 
+    <TextView
+        android:paddingTop="@android:dimen/app_icon_size"
+        android:text="댓글"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <ScrollView
+        android:gravity="bottom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

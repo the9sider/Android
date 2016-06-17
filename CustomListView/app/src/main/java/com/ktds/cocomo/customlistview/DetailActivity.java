@@ -80,8 +80,8 @@ public class DetailActivity extends ActionBarActivity {
                             tvHitCount.setText("0");
                         }
 
-                        if (post.getCommentsCount() > 0) {
-                            for (int i = 0; i < post.getCommentsCount(); i++) {
+                        if (post.getComments() != null) {
+                            for (int i = 0; i < post.getComments().getData().size(); i++) {
                                 TextView tvComment = new TextView(DetailActivity.this);
                                 tvComment.setText(post.getComments().getData().get(i).getMessage());
                                 ll.addView(tvComment);

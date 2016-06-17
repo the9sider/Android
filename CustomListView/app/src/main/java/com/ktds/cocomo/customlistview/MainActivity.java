@@ -1,11 +1,14 @@
 package com.ktds.cocomo.customlistview;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,6 +57,52 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.list_menu, menu);
+
+        // 검색 기능 활성화한다.
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+
+        // 검색 버튼을 가져온다.
+        MenuItem searchButton = menu.findItem(R.id.searchButton);
+
+        // 검색버튼을 클릭했을 때 SearchView를 가져온다.
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchButton);
+
+        // 검색 힌트를 설정한다.
+        searchView.setQueryHint("검색어를 입력하세요");
+
+        // SearchView를 검색 가능한 위젝으로 설정한다.
+        searchView.setSearchableInfo( searchManager.getSearchableInfo( getComponentName() ) );
+
+        //
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            /**
+             * 검색 버튼을 클릭했을 때 동작하는 이벤트
+             * @param s : 입력된 검색어
+             * @return
+             */
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                intent.putExtra("query", s);
+                startActivity(intent);
+
+                return false;
+            }
+
+            /**
+             * 검색어를 입력할 때 동작하는 이
+             * @param s
+             * @return
+             */
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
         return true;
     }
 

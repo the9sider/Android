@@ -25,7 +25,7 @@ public class Facebook {
      */
     private static final String APP_ID = "453904898150515";
     private static final String APP_SECRET = "394c32c954e3074738e6e07a750acf6a";
-    private static final String ACCESS_TOKEN = "EAAGc0vg3UHMBAFSdfhXXVSuk7ZCg0A8Cz4WZBIZA6NekWdZCzUkWwgvzUZA8DCy9949t59RqZAoLLomaxRlkuWK2QjZBnUgxdcRZBcyjUnJ6GW3dFm5ZCAocEI9lYPAWLgUs6sX2r12DIXpKjYiAu6jkLszfGljpeGFsJurxdgByWWgZDZD";
+    private static final String ACCESS_TOKEN = "EAAGc0vg3UHMBANMZCdlt96Lvj2IMC5o4HOl18Klc8vbo4ncdszZBOdshivZCAhoOBgh0DMIQoaTbfH3YGDZCCgJe3IhTZCu3Qvs3siHOsOPkbfknA127M0by8jYkS2cFBzMZAnQ9ZBAusB1KesukRZAVw38q6XSdgrcJNjzGIS1N8QZDZD]";
 
     private Context context;
 
@@ -123,7 +123,7 @@ public class Facebook {
                 /**
                  * Post 상세정보 가져오기
                  */
-                Post post = myFacebook.fetchObject(id, Post.class, Parameter.with("fields", "id,from,message"));
+                Post post = myFacebook.fetchObject(id, Post.class, Parameter.with("fields", "id,from,message,comments"));
                 postSerializable.serialize(post);
             }
         }).start();
