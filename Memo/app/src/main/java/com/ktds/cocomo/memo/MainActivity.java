@@ -127,15 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
             final MemoVO memo = (MemoVO) getItem(position);
             holder.tvTitle.setText(memo.getTitle());
-
-//            String time = memo.getTime() + "";
-//            long currTime = System.currentTimeMillis();
-
-//            if( (currTime - time) > 1440 ) {
-                holder.tvDate.setText(memo.getDate() + "");
-//            } else {
-//                holder.tvDate.setText(memo.getTime() + "");
-//            }
+            holder.tvDate.setText(memo.getDate());
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override

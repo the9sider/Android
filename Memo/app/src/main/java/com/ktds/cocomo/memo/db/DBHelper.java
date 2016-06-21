@@ -26,17 +26,13 @@ public class DBHelper extends SQLiteOpenHelper {
         this.context = context;
     }
 
-    public void testDB() {
-        SQLiteDatabase db = getReadableDatabase();
-    }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
 
         // String 보다 StringBuffer가 Query 만들기 편하다.
         StringBuffer sb = new StringBuffer();
         sb.append(" CREATE TABLE MEMO_TABLE ( ");
-        sb.append(" _ID INTEGER PRIMARY KEY AUTOINCREMENT, ");
+        sb.append(" ID INTEGER PRIMARY KEY, ");
         sb.append(" TITLE TEXT, ");
         sb.append(" DESCRIPTION TEXT, ");
         sb.append(" DATE TEXT, ");
@@ -55,6 +51,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void addMemo(MemoVO memo) {
 
+        // 쿼리 내부에서 now Date 를 이용하면 한국날짜가 안들어간다.
         long now = System.currentTimeMillis();
         Date date = new Date(now);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -63,13 +60,13 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         StringBuffer sb = new StringBuffer();
         sb.append(" INSERT INTO MEMO_TABLE ( ");
-        sb.append(" TITLE, DESCRIPTION, DATE, TIME ) ");
-        sb.append(" VALUES ( ?, ?, ?, ? ) ");
+        sb.append(" TITLE, DESCRIPTION, DATE ) ");
+        sb.append(" VALUES ( ?, ?, ? ) ");
         db.execSQL(sb.toString(),
                 new Object[]{
                         memo.getTitle(),
                         memo.getDescription(),
-                        nowDate, now + ""
+                        nowDate
                 });;
         Toast.makeText(context, "Insert 완료", Toast.LENGTH_SHORT).show();
     }
@@ -80,12 +77,13 @@ public class DBHelper extends SQLiteOpenHelper {
         StringBuffer sb = new StringBuffer();
         sb.append(" UPDATE MEMO_TABLE ");
         sb.append(" SET TITLE = ?, ");
-        sb.append(" DESCRIPTION = ?, ");
-        sb.append(" WHERE _ID = ? ");
+        sb.append(" DESCRIPTION = ? ");
+        sb.append(" WHERE ID = ? ");
         db.execSQL(sb.toString(),
                 new Object[]{
                         newMemo.getTitle(),
                         newMemo.getDescription(),
+                        newMemo.getId()
                 });
         Toast.makeText(context, "Modify 완료", Toast.LENGTH_SHORT).show();
     }
@@ -93,7 +91,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<MemoVO> getAllMemo() {
 
         StringBuffer sb = new StringBuffer();
-        sb.append(" SELECT _ID, TITLE, DESCRIPTION, DATE, TIME FROM MEMO_TABLE ");
+        sb.append(" SELECT ID, TITLE, DESCRIPTION, DATE, TIME FROM MEMO_TABLE ");
 
         // 읽기 전용 DB 객체를 만든다.
         SQLiteDatabase db = getReadableDatabase();
@@ -106,11 +104,10 @@ public class DBHelper extends SQLiteOpenHelper {
         // moveToNext 다음에 데이터가 있으면 true 없으면 false
         while( cursor.moveToNext() ) {
             memo = new MemoVO();
-            memo.set_id(cursor.getInt(0));
+            memo.setId(cursor.getInt(0));
             memo.setTitle(cursor.getString(1));
             memo.setDescription(cursor.getString(2));
             memo.setDate(cursor.getString(3));
-            memo.setTime(Long.parseLong(cursor.getString(4)));
 
             memoList.add(memo);
         }
@@ -118,7 +115,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return memoList;
     }
 
-    public void deleteMemoById(int _id) {
+    public void deleteMemoById(int id) {
 
         SQLiteDatabase db = getWritableDatabase();
         StringBuffer sb = new StringBuffer();
@@ -126,7 +123,7 @@ public class DBHelper extends SQLiteOpenHelper {
         sb.append(" FROM MEMO_TABLE ");
         sb.append(" WHERE _ID = ? ");
         db.execSQL(sb.toString(),
-                new Object[]{ _id });
+                new Object[]{ id });
 
         Toast.makeText(context, "Delete 완료", Toast.LENGTH_SHORT).show();
     }

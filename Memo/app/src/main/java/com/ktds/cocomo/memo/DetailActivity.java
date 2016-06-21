@@ -20,6 +20,9 @@ public class DetailActivity extends AppCompatActivity {
     private EditText etDescription;
 
     private DBHelper dbHelper;
+    private MemoVO memo;
+
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,24 +36,28 @@ public class DetailActivity extends AppCompatActivity {
             dbHelper = new DBHelper(DetailActivity.this, "MEMO", null, 1);
         }
 
-        final MemoVO memo = (MemoVO) getIntent().getSerializableExtra("memo");
-        if(memo != null && ( memo.getTitle() != null || memo.getDescription() != null )) {
-            etTitle.setText(memo.getTitle());
-            etDescription.setText(memo.getDescription());
-        }
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                dbHelper.deleteMemoById(memo.get_id());
+
+                dbHelper.deleteMemoById(memo.getId());
                 Intent intent = new Intent(DetailActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
+
+        memo = new MemoVO();
+        memo = (MemoVO) getIntent().getSerializableExtra("memo");
+        if(memo != null && ( memo.getTitle().length() > 0 || memo.getDescription().length() > 0 )) {
+            etTitle.setText(memo.getTitle());
+            etDescription.setText(memo.getDescription());
+        } else {
+            fab.setVisibility(View.INVISIBLE);
+        }
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -70,7 +77,9 @@ public class DetailActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if(id == R.id.action_complete) {
 
-            MemoVO memo = new MemoVO();
+            if(memo == null) {
+                memo = new MemoVO();
+            }
 
             if(etTitle.getText() == null) {
                 Toast.makeText(DetailActivity.this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show();
@@ -86,7 +95,12 @@ public class DetailActivity extends AppCompatActivity {
                 memo.setDescription(etDescription.getText().toString());
             }
 
-            dbHelper.addMemo(memo);
+            if(memo.getId() > 0) {
+                dbHelper.modifyMemo(memo);
+            } else {
+                dbHelper.addMemo(memo);
+            }
+
 
             Intent intent = new Intent(DetailActivity.this, MainActivity.class);
             startActivity(intent);
