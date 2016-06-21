@@ -1,21 +1,24 @@
 package com.ktds.cocomo.memowithweb.vo;
 
+import java.io.Serializable;
+
 /**
  * Created by 206-032 on 2016-06-21.
  */
-public class MemoVO {
+public class MemoVo implements Serializable {
 
-    private String id;
+    private String memoId;
     private String title;
     private String description;
     private String createdDate;
+    private String code;
 
-    public String getId() {
-        return id;
+    public String getMemoId() {
+        return memoId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setMemoId(String memoId) {
+        this.memoId = memoId;
     }
 
     public String getTitle() {
@@ -40,5 +43,13 @@ public class MemoVO {
 
     public void setCreatedDate(String createdDate) {
         this.createdDate = createdDate;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
