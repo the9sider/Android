@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,12 +19,15 @@ import android.widget.TextView;
 import com.ktds.cocomo.memowithweb.db.DBHelper;
 import com.ktds.cocomo.memowithweb.vo.MemoVo;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private ListView lvMemoList;
     private DBHelper dbHelper;
+    private List<MemoVo> memoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,13 +51,27 @@ public class MainActivity extends AppCompatActivity {
 
                 // "Fab Icon" 누르면 DetailActivity로 이동
                 Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 10000);
             }
         });
 
-        List<MemoVo> memoList = dbHelper.getAllMemo();
+        memoList = dbHelper.getAllMemo();
         if (memoList != null && memoList.size() > 0) {
             lvMemoList.setAdapter(new MemoListAdapter(memoList, MainActivity.this));
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if ( requestCode == 10000 && resultCode == RESULT_OK ) {
+            Log.d("RESULT", "...");
+
+            List<MemoVo> tempMemo = dbHelper.getAllMemo();
+            memoList.clear();
+            memoList.addAll(tempMemo);
+
+            Log.d("RESULT", memoList.size() + "");
+            ( (MemoListAdapter) lvMemoList.getAdapter() ).notifyDataSetChanged();
         }
     }
 
@@ -71,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
             // "작성" 버튼을 누르면 DetailActivity로 이동
             Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 10000);
             return true;
         }
 
@@ -128,14 +146,31 @@ public class MainActivity extends AppCompatActivity {
 
             final MemoVo memo = (MemoVo) getItem(position);
             holder.tvTitle.setText(memo.getTitle());
-            holder.tvDate.setText(memo.getCreatedDate());
+
+            String memoDate = memo.getCreatedDate();
+            String[] split = memoDate.split("-");
+            String realDate = split[0];
+            realDate = realDate.trim();
+
+            long now = System.currentTimeMillis();
+            // 1000 * 60 * 60
+            now = now + 36000000;
+            Date date = new Date(now);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+            String nowDate = dateFormat.format(date);
+            nowDate = nowDate.trim();
+
+            if( nowDate.equals(realDate)  ) {
+                holder.tvDate.setText(split[1]);
+            }
+            holder.tvDate.setText(split[0]);
 
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(v.getContext(), DetailActivity.class);
                     intent.putExtra("memo", memo);
-                    startActivity(intent);
+                    startActivityForResult(intent, 10000);
                 }
             });
 

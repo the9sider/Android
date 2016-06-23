@@ -1,8 +1,10 @@
 package com.ktds.cocomo.memowithweb;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -49,11 +51,30 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if( etTitle.getText().length() > 0 && etDescription.getText().length() > 0 ) {
                     Log.d("MEMO", "Delete DetailActivity");
-                    param.put("code", "deleteMemo");
-                    param.put("memoId", memo.getMemoId());
-                    param.put("title", memo.getTitle());
-                    param.put("description", memo.getDescription());
-                    networkTask.execute(param);
+
+                    // Alert을 이용해 삭제시키기
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(DetailActivity.this);
+                    dialog  .setTitle("삭제 알림")
+                            .setMessage("정말 삭제하시겠습니까?")
+                            .setPositiveButton("예", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    param.put("code", "deleteMemo");
+                                    param.put("memoId", memo.getMemoId());
+                                    param.put("title", memo.getTitle());
+                                    param.put("description", memo.getDescription());
+                                    networkTask.execute(param);
+                                    Log.d("MEMO", "삭제완료");
+                                    //DetailActivity.this.goMainActivity();
+                                }
+                            })
+                            .setNeutralButton("아니요", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Log.d("MEMO", "삭제취소");
+                                    Toast.makeText(DetailActivity.this, "삭제를 취소했습니다.", Toast.LENGTH_SHORT).show();
+                                }
+                            }).create().show();
                 } else if ( etTitle.getText().length() == 0 ) {
                     Toast.makeText(DetailActivity.this, "제목을 입력하세요", Toast.LENGTH_SHORT).show();
                     return;
@@ -61,8 +82,6 @@ public class DetailActivity extends AppCompatActivity {
                     Toast.makeText(DetailActivity.this, "내용을 입력하세요", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Intent intent = new Intent(DetailActivity.this, MainActivity.class);
-                startActivity(intent);
             }
         });
 
@@ -107,14 +126,12 @@ public class DetailActivity extends AppCompatActivity {
                 param.put("title", etTitle.getText().toString());
                 param.put("description", etDescription.getText().toString());
                 networkTask.execute(param);
-                this.goMainActivity();
             } else {
                 Log.d("MEMO", "Insert DetailActivity");
                 param.put("code", "addMemo");
                 param.put("title", etTitle.getText().toString());
                 param.put("description", etDescription.getText().toString());
                 networkTask.execute(param);
-                this.goMainActivity();
             }
 
             return true;
@@ -126,7 +143,9 @@ public class DetailActivity extends AppCompatActivity {
      * Main Activity로 이동
      */
     public void goMainActivity() {
-        Intent intent = new Intent(DetailActivity.this, MainActivity.class);
-        startActivity(intent);
+        setResult(RESULT_OK, new Intent());
+        finish();
+//        Intent intent = new Intent(DetailActivity.this, MainActivity.class);
+//        startActivity(intent);
     }
 }

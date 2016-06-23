@@ -1,7 +1,10 @@
 package com.ktds.cocomo.memowithweb.utility;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -62,6 +65,7 @@ public class NetworkTask extends AsyncTask<Map<String, String>, Integer, String>
 
         // 반환값이 있으면 전달한다.
         if(s != null && s.length() > 0) {
+            Log.d("MEMO", s);
             Gson gson = new Gson();
             MemoVo memo = gson.fromJson(s, MemoVo.class);
 
@@ -72,6 +76,9 @@ public class NetworkTask extends AsyncTask<Map<String, String>, Integer, String>
             } else if (memo.getCode().equals("D")) {
                 this.deleteMemo(memo.getMemoId());
             }
+
+            ((AppCompatActivity)context).setResult(Activity.RESULT_OK, new Intent());
+            ((AppCompatActivity)context).finish();
         }
     }
 
@@ -85,7 +92,7 @@ public class NetworkTask extends AsyncTask<Map<String, String>, Integer, String>
 
         // DB 연결 안되어있으면 생성
         if(dbHelper == null) {
-            dbHelper = new DBHelper(null, "MEMO2", null, DBHelper.DB_VERSION);
+            dbHelper = new DBHelper(context, "MEMO2", null, DBHelper.DB_VERSION);
         }
 
         // SQLite Memo 추가
@@ -102,7 +109,7 @@ public class NetworkTask extends AsyncTask<Map<String, String>, Integer, String>
 
         // DB 연결 안되어있으면 생성
         if(dbHelper == null) {
-            dbHelper = new DBHelper(null, "MEMO2", null, DBHelper.DB_VERSION);
+            dbHelper = new DBHelper(context, "MEMO2", null, DBHelper.DB_VERSION);
         }
 
         // SQLite Memo 수정
@@ -119,7 +126,7 @@ public class NetworkTask extends AsyncTask<Map<String, String>, Integer, String>
 
         // DB 연결 안되어있으면 생성
         if(dbHelper == null) {
-            dbHelper = new DBHelper(null, "MEMO2", null, DBHelper.DB_VERSION);
+            dbHelper = new DBHelper(context, "MEMO2", null, DBHelper.DB_VERSION);
         }
 
         // SQLite Memo 삭제
