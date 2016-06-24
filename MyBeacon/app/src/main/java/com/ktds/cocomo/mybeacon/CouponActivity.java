@@ -1,9 +1,8 @@
 package com.ktds.cocomo.mybeacon;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class CouponActivity extends AppCompatActivity {
+public class CouponActivity extends CustomAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

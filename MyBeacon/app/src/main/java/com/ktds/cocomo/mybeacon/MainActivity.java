@@ -1,11 +1,10 @@
 package com.ktds.cocomo.mybeacon;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.estimote.sdk.SystemRequirementsChecker;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends CustomAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         // 블루투스 권한 및 활성화 코드드
-       SystemRequirementsChecker.checkWithDefaultDialogs(this);
-
+        SystemRequirementsChecker.checkWithDefaultDialogs(this);
     }
 }
