@@ -4,56 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:gravity="center"
+    android:paddingLeft="50dp"
+    android:paddingRight="50dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="70dp"
-    android:paddingRight="70dp"
-    android:background="@drawable/background"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.ktds.cocomo.sems.MainActivity"
+    tools:context="com.ktds.junho.sems.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
     <LinearLayout
         android:orientation="vertical"
-        android:background="#33000000"
-        android:padding="10dp"
+        android:background="#33FFFFFF"
+        android:padding="15dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="40dp"
+            android:text="LOGIN"
+            android:textSize="30dp"
             android:layout_marginBottom="20dp"
-            android:textColor="#BBBBBB"
-            android:text="LOGIN" />
+            android:gravity="center"/>
 
         <EditText
-            android:id="@+id/etId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:hint="ID를 입력하세요."
-            android:textColorHint="#BBBBBB"
-            android:background="#44BBBBBB"
-            android:layout_marginBottom="5dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:text="test02"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/etId"/>
 
         <EditText
-            android:id="@+id/etPassword"
-            android:hint="비밀번호를 입력하세요."
-            android:background="#44BBBBBB"
-            android:textColorHint="#BBBBBB"
-            android:inputType="textPassword"
-            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:hint="비밀번호를 입력하세요."
+            android:text="123qwe!@#qwe"
+            android:layout_marginBottom="20dp"
+            android:id="@+id/etPassword"
+            android:inputType="textPassword"/>
 
         <Button
             android:id="@+id/btnLogin"
             android:text="LOGIN"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
     </LinearLayout>
-
 </LinearLayout>
